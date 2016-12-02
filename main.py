@@ -5,16 +5,18 @@ import sys
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
 
+import os
 import serial
-from PyQt5 import QtCore
+from PyQt5 import QtCore, QtGui
 from mainwin import Ui_MainWindow
 from motor_control import cycle_move
 from motor_control import init_port
 from motor_control import move_all_to_default
 from motor_control import move_relative
+from process_spc import convert
 
 
-class UI_Main(QMainWindow):
+class UiMain(QMainWindow):
     update_progress = QtCore.pyqtSignal(int, int)
     spc_file = ""
 
@@ -61,7 +63,8 @@ class UI_Main(QMainWindow):
         move_relative(ser, distance)
 
     def open_spc(self):
-        pass
+        self.spc_file = QtGui.QFileDialog.getOpenFileName(self, 'Open scanned spc-file', os.curdir(),
+                                                          "SPC files (*.spc)")
 
     def start_scan(self):
         try:
@@ -75,17 +78,21 @@ class UI_Main(QMainWindow):
         cycle_move(self.serials, width, height, delay, step, self.update_progress, self)
 
     def start_convert(self):
-        pass
+        try:
+            width = float(self.ui.Scan_Table_2.item(0, 0).text())
+            height = float(self.ui.Scan_Table_2.item(1, 0).text())
+            omitdata = float(self.ui.Scan_Table_2.item(2, 0).text())
+            size = float(self.ui.Scan_Table_2.item(3, 0).text())
+            start = float(self.ui.Scan_Table_2.item(4, 0).text())
+            end = float(self.ui.Scan_Table_2.item(5, 0).text())
+            freqstep = float(self.ui.Scan_Table_2.item(6, 0).text())
+        except ValueError:
+            QMessageBox.critical(self, "Error", "Value invalid!")
+            return
+        convert(self.spc_file, width, height, size, omitdata, start, end, freqstep, self.update_progress)
 
-    # convert width: float(self.ui.Scan_Table_2.item(0,0).text())
-    # convert height: float(self.ui.Scan_Table_2.item(1,0).text())
-    # convert omitdata: float(self.ui.Scan_Table_2.item(2,0).text())
-    # convert size: float(self.ui.Scan_Table_2.item(3,0).text())
-    # convert start: float(self.ui.Scan_Table_2.item(4,0).text())
-    # convert end: float(self.ui.Scan_Table_2.item(5,0).text())
-    # convert freqstep: float(self.ui.Scan_Table_2.item(6,0).text())
 
 app = QApplication(sys.argv)
-window = UI_Main(init_port())
+window = UiMain(init_port())
 window.show()
 sys.exit(app.exec_())

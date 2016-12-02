@@ -1,6 +1,8 @@
 import threading
 import time
+
 from PyQt5.QtWidgets import QMessageBox
+
 import serial
 import serial.tools.list_ports
 
@@ -84,6 +86,7 @@ def move_to_default(ser):
 def move_relative(ser, length):
     send_and_wait(ser, "PS" + str(length))
 
+
 # serials={"x":ser, "y":ser}
 def move_all_to_default(serials):
     x_reset_thread = threading.Thread(target=move_to_default, args=(serials["x"],))
@@ -93,6 +96,7 @@ def move_all_to_default(serials):
     x_reset_thread.start()
     x_reset_thread.join()
     y_reset_thread.join()
+
 
 # serials={"x":ser, "y":ser}
 def cycle_move(serials, width, height, delay, step_size, update_signal=None, parent=None):
@@ -118,6 +122,6 @@ def cycle_move(serials, width, height, delay, step_size, update_signal=None, par
             pos = not pos
     finally:
         if parent is not None:
-            QMessageBox.information(parent,"Info","Scan completed, press ok to reset")
+            QMessageBox.information(parent, "Info", "Scan completed, press ok to reset")
         print("resetting...")
         move_all_to_default(serials)
