@@ -78,13 +78,13 @@ def reset(ser):
 
 
 def move_to_default(ser):
-    reset(ser)
-    send_and_wait(ser, "OR")
+    #reset(ser)
+    #send_and_wait(ser, "OR")
     send_and_wait(ser, "PA6")
 
 
 def move_relative(ser, length):
-    send_and_wait(ser, "PS" + str(length))
+    send_and_wait(ser, "PR" + str(length))
 
 
 # serials={"x":ser, "y":ser}
@@ -94,6 +94,7 @@ def move_all_to_default(serials):
     y_reset_thread = threading.Thread(target=move_to_default, args=(serials["y"],))
     y_reset_thread.setDaemon(True)
     x_reset_thread.start()
+    y_reset_thread.start()
     x_reset_thread.join()
     y_reset_thread.join()
 

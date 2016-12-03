@@ -3,7 +3,7 @@
 
 import sys
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QMessageBox, QFileDialog
 
 import os
 import serial
@@ -52,10 +52,10 @@ class UiMain(QMainWindow):
     def move_rel(self, x=True):
         try:
             if x:
-                distance = float(self.ui.X_distance.text())
+                distance = float(self.ui.X_distance.text())/1000.0
                 ser = self.x_ser
             else:
-                distance = float(self.ui.Y_distance.text())
+                distance = float(self.ui.Y_distance.text())/1000.0
                 ser = self.y_ser
         except ValueError:
             QMessageBox.critical(self, "Error", "Value invalid!")
@@ -63,15 +63,15 @@ class UiMain(QMainWindow):
         move_relative(ser, distance)
 
     def open_spc(self):
-        self.spc_file = QtGui.QFileDialog.getOpenFileName(self, 'Open scanned spc-file', os.curdir(),
-                                                          "SPC files (*.spc)")
+        self.spc_file,_ = QFileDialog.getOpenFileName(self, 'Open scanned spc-file', os.curdir,
+                                                          "SPC files (*.spc *.SPC)")
 
     def start_scan(self):
         try:
-            width = float(self.ui.Scan_Table.item(0, 0).text())
-            height = float(self.ui.Scan_Table.item(1, 0).text())
+            width = float(self.ui.Scan_Table.item(0, 0).text())/1000.0
+            height = float(self.ui.Scan_Table.item(1, 0).text())/1000.0
             delay = float(self.ui.Scan_Table.item(2, 0).text())
-            step = float(self.ui.Scan_Table.item(3, 0).text())
+            step = float(self.ui.Scan_Table.item(3, 0).text())/1000.0
         except ValueError:
             QMessageBox.critical(self, "Error", "Value invalid!")
             return
@@ -79,13 +79,13 @@ class UiMain(QMainWindow):
 
     def start_convert(self):
         try:
-            width = float(self.ui.Scan_Table_2.item(0, 0).text())
-            height = float(self.ui.Scan_Table_2.item(1, 0).text())
-            omitdata = float(self.ui.Scan_Table_2.item(2, 0).text())
-            size = float(self.ui.Scan_Table_2.item(3, 0).text())
-            start = float(self.ui.Scan_Table_2.item(4, 0).text())
-            end = float(self.ui.Scan_Table_2.item(5, 0).text())
-            freqstep = float(self.ui.Scan_Table_2.item(6, 0).text())
+            width = int(self.ui.Scan_Table_2.item(0, 0).text())
+            height = int(self.ui.Scan_Table_2.item(1, 0).text())
+            omitdata = int(self.ui.Scan_Table_2.item(2, 0).text())
+            size = int(self.ui.Scan_Table_2.item(3, 0).text())
+            start = int(self.ui.Scan_Table_2.item(4, 0).text())
+            end = int(self.ui.Scan_Table_2.item(5, 0).text())
+            freqstep = int(self.ui.Scan_Table_2.item(6, 0).text())
         except ValueError:
             QMessageBox.critical(self, "Error", "Value invalid!")
             return
