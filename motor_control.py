@@ -79,7 +79,7 @@ def reset(ser):
 
 def move_to_default(ser):
     #reset(ser)
-    #send_and_wait(ser, "OR")
+    send_and_wait(ser, "OR")
     send_and_wait(ser, "PA6")
 
 
@@ -101,13 +101,15 @@ def move_all_to_default(serials):
 
 # serials={"x":ser, "y":ser}
 def cycle_move(serials, width, height, delay, step_size, update_signal=None, parent=None):
-    total_move = int(height / step_size) * int(width / step_size)
     current_move = 0
+    h_move=int(height / step_size)
+    w_move=int(width / step_size)-1
+    total_move = h_move * w_move
     pos = True
     try:
-        for y in range(int(height / step_size)):
+        for y in range(h_move):
             print("moving.. +x" if pos else "moving.. -x")
-            for x in range(int(width / step_size)):
+            for x in range(w_move):
                 if not pos:
                     send_and_wait(serials["x"], "PR-" + str(step_size), False)
                 else:
