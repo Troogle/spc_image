@@ -9,12 +9,11 @@ import os
 import serial
 from PyQt5 import QtCore, QtGui
 from mainwin import Ui_MainWindow
+from process_spc import convert
 from motor_control import cycle_move
 from motor_control import init_port
 from motor_control import move_all_to_default
 from motor_control import move_relative
-from process_spc import convert
-
 
 class UiMain(QMainWindow):
     update_progress = QtCore.pyqtSignal(int, int)
@@ -24,9 +23,16 @@ class UiMain(QMainWindow):
         QMainWindow.__init__(self)
         self.ui = Ui_MainWindow()
         self.ui.setupUi(self)
-        self.x_ser = serial.Serial(ports["x"], 921600, timeout=1)
-        self.y_ser = serial.Serial(ports["y"], 921600, timeout=1)
-        self.serials = {"x": self.x_ser, "y": self.y_ser}
+        if ports=={}:
+            self.ui.Init_Button.setEnabled(False)
+            self.ui.Move_X_Button.setEnabled(False)
+            self.ui.Move_Y_Button.setEnabled(False)
+            self.ui.Scan_Button.setEnabled(False)
+            self.serials=None
+        else:
+            self.x_ser = serial.Serial(ports["x"], 921600, timeout=1)
+            self.y_ser = serial.Serial(ports["y"], 921600, timeout=1)
+            self.serials = {"x": self.x_ser, "y": self.y_ser}
         self.update_progress.connect(self.update_progress_handler)
         self.ui.Init_Button.clicked.connect(self.reset_all)
         self.ui.Move_X_Button.clicked.connect(lambda: self.move_rel(True))
@@ -42,8 +48,9 @@ class UiMain(QMainWindow):
 
     def closeEvent(self, *args, **kwargs):
         super(QMainWindow, self).closeEvent(*args, **kwargs)
-        self.x_ser.close()
-        self.y_ser.close()
+        if self.serials:
+            self.x_ser.close()
+            self.y_ser.close()
 
     def reset_all(self):
         move_all_to_default(self.serials)

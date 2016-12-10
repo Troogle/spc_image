@@ -1,5 +1,6 @@
 import threading
 import time
+import sys
 
 from PyQt5.QtWidgets import QMessageBox
 
@@ -60,7 +61,8 @@ def init_port():
             y_port = port.device
     if x_port == "" or y_port == "":
         print("Not connected!")
-        exit()
+        return {}
+        #sys.exit()
     return {"x": x_port, "y": y_port}
 
 

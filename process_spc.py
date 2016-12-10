@@ -2,6 +2,9 @@ import subprocess
 import sys
 
 import matplotlib.pyplot as plt
+import matplotlib.backends.backend_tkagg
+import tkinter
+import tkinter.filedialog
 import os
 import spc
 
